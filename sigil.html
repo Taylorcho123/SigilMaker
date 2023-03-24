@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circle with Consonants</title>
+    <link rel="stylesheet" href="fonts.css">
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            overflow: hidden;
+        }
+
+        #circle {
+            border: 1px solid white;
+            border-radius: 50%;
+            position: relative;
+            width: 50vmin;
+            height: 50vmin;
+        }
+
+        .consonant {
+            position: absolute;
+            font-size: 20px;
+            font-family: 'Diploma', cursive;
+            text-transform: lowercase;
+            color: white;
+        }
+
+        /* Add styles for the starry background */
+        canvas {
+            display: block;
+            position: absolute;
+            z-index: -1;
+            width: 100%;
+            height: 100%;
+        }
+
+        @keyframes twinkling {
+          0% {
+            opacity: 0;
+            transform: scale(0.5) translateY(0px);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1) translateY(-1px);
+          }
+          100% {
+            opacity: 0;
+            transform: scale(0.5) translateY(0px);
+          }
+        }
+
+        #error-message, #go-back-button {
+            display: none;
+            font-family: 'Diploma', cursive;
+            color: white;
+        }
+
+        #error-message {
+            font-size: 28px; /* Increase the font size */
+            text-align: center;
+            margin-bottom: 20px; /* Add some space between the error message and the button */
+        }
+
+        #go-back-button {
+            font-size: 24px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: rgba(255, 0, 0, 0.8);
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        #go-back-button:hover {
+            background-color: rgba(255, 0, 0, 1);
+        }
+    </style>
+
+</head>
+<body>
+    <canvas id="universeCanvas"></canvas> <!-- Add the canvas for the starry background -->
+
+    <!-- in case there is no more than 1 char from input -->
+    <div id="centered-text">
+    <p id="unique-consonants"></p>
+
+    <div id="circle"></div>
+    <p id="error-message" style="color: white; text-align: center;">Not enough unique consonants. <br/>Please try again with different input.</p>
+    <button id="go-back-button" onclick="window.history.back()">Go Back</button>
+    <script>
+        // Add the JavaScript for the starry background
+        const canvas = document.getElementById('universeCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Star {
+          constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 5 + 1;
+            this.speedX = Math.random() * 3 - 1.5;
+            this.speedY = Math.random() * 3 - 1.5;
+          }
+
+          update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+
+            if (this.size > 0.2) this.size -= 0.1;
+
+            if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+              this.x = Math.random() * canvas.width;
+              this.y = Math.random() * canvas.height;
+              this.size = Math.random() * 5 + 1;
+              this.speedX = Math.random() * 3 - 1.5;
+              this.speedY = Math.random() * 3 - 1.5;
+            }
+          }
+
+          draw() {
+            ctx.fillStyle = 'rgba(255, 0, 0, 1)';
+            ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+          }
+        }
+
+        const stars = [];
+        for (let i = 0; i < 100; i++) {
+          stars.push(new Star());
+        }
+
+        function animate() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          for (const star of stars) {
+          star.update();
+          star.draw();
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+
+      // Original sigil code
+      let urlParams = new URLSearchParams(window.location.search);
+      let userInput = urlParams.get("input");
+      let words = userInput.split(/\s+/);
+      let uniqueConsonants = new Set();
+      for (let i = 0; i < words.length; i++) {
+        let consonantsOnly = words[i].replace(/[^a-z]/gi, "").replace(/[aeiouy]/gi, "").replace(/([^aeiouy])\1+/gi, "$1");
+        for (let j = 0; j < consonantsOnly.length; j++) {
+          uniqueConsonants.add(consonantsOnly[j].toLowerCase());
+        }
+      }
+      let uniqueConsonantsArray = Array.from(uniqueConsonants);
+      
+      if (uniqueConsonantsArray.length <= 1) {
+          document.getElementById("error-message").style.display = "block";
+          document.getElementById("go-back-button").style.display = "block";
+          document.getElementById("circle").style.display = "none"; // Hide the circle
+      } else {
+        const consonants = 'bcdfghjklmnpqrstvwxz';
+        const circle = document.getElementById('circle');
+        const radius = circle.clientWidth / 2;
+        const angleStep = 360 / consonants.length;
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = circle.clientWidth;
+        canvas.height = circle.clientHeight;
+        canvas.style.position = 'absolute';
+        circle.appendChild(canvas);
+
+        ctx.strokeStyle = 'white'; // Set the line color to white
+        ctx.fillStyle = 'white'; // Set the point color to white
+
+        function shuffle(array) {
+            let currentIndex = array.length, temporaryValue, randomIndex;
+            while (0 !== currentIndex) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
+                temporaryValue = array[currentIndex];
+                array[currentIndex] = array[randomIndex];
+                array[randomIndex] = temporaryValue;
+            }
+            return array;
+        }
+
+        const shuffledConsonants = shuffle(consonants.split('')).join('');
+        const letterDistanceMultiplierX = 1.1;
+        const letterDistanceMultiplierY = 1.1;
+        const letterPositions = {};
+
+        for (let i = 0; i < shuffledConsonants.length; i++) {
+            const angle = angleStep * i;
+            const radian = angle * (Math.PI / 180);
+            const x = radius * (1 + letterDistanceMultiplierX * Math.cos(radian)) -4;
+            const y = radius * (1 - letterDistanceMultiplierY * Math.sin(radian)) -13;
+
+            const letter = document.createElement('span');
+            letter.classList.add('consonant');
+            letter.textContent = shuffledConsonants[i];
+            letter.style.left = `${x}px`;
+            letter.style.top = `${y}px`;
+
+            letterPositions[shuffledConsonants[i]] = { x, y };
+            circle.appendChild(letter);
+        }
+
+        function drawLine(x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
+
+        function drawSmallCircle(x, y, radius) {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        // Input characters
+        const inputCharacters = uniqueConsonantsArray.join("");
+
+        // Draw lines between input characters inside the circle
+        for (let i = 0; i < inputCharacters.length - 1; i++) {
+            const char1 = inputCharacters[i];
+            const char2 = inputCharacters[i + 1];
+
+            if (letterPositions[char1] && letterPositions[char2]) {
+              const lineDistanceMultiplier = 0.95;
+              const x1 = radius * (1 + lineDistanceMultiplier * Math.cos(angleStep * shuffledConsonants.indexOf(char1) * (Math.PI / 180)));
+              const y1 = radius * (1 - lineDistanceMultiplier * Math.sin(angleStep * shuffledConsonants.indexOf(char1) * (Math.PI / 180)));
+              const x2 = radius * (1 + lineDistanceMultiplier * Math.cos(angleStep * shuffledConsonants.indexOf(char2) * (Math.PI / 180)));
+              const y2 = radius * (1 - lineDistanceMultiplier * Math.sin(angleStep * shuffledConsonants.indexOf(char2) * (Math.PI / 180)));
+
+              drawLine(x1, y1, x2, y2);
+
+              // Draw small circle at the first starting point
+              if (i === 0) {
+                  drawSmallCircle(x1, y1, 3);
+              }
+
+              // Draw small circle at the last ending point
+              if (i === inputCharacters.length - 2) {
+                  drawSmallCircle(x2, y2, 3);
+              }
+          }
+      }
+  }
+</script>
+</body>
+</html>

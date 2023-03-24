@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Input Page</title>
+    <link rel="stylesheet" href="fonts.css">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  
+  <body>
+    <canvas id="universeCanvas"></canvas>
+    <form>
+      <label for="input-text">Enter a one-line text:</label><br>
+      <input type="text" id="input-text" name="input-text"><br>
+      <button type="submit" onclick="handleSubmit(event)">Submit</button>
+    </form>
+
+    <script src="script.js"></script>
+    <script>
+      function handleSubmit(event) {
+        event.preventDefault();
+        let userInput = document.getElementById("input-text").value;
+        let url = "sigil.html?input=" + encodeURIComponent(userInput);
+        window.location.href = url;
+      }
+    </script>
+  </body>
+</html>

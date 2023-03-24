@@ -1,0 +1,60 @@
+body, canvas, form {
+  margin: 0;
+  padding: 0;
+}
+
+canvas {
+  display: block;
+  position: absolute;
+  z-index: -1;
+  background-color: black;
+}
+
+form {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-family: 'Diploma', cursive;
+}
+
+label {
+  font-size: 24px;
+  color: white;
+}
+
+input[type="text"] {
+  display: block;
+  width: 70%;
+  margin: 10px auto;
+  font-size: 24px;
+  padding: 10px;
+  border: 2px solid white;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  outline: none;
+  font-family: 'Diploma', cursive;
+}
+
+input[type="text"]::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+button {
+  font-size: 24px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: rgba(255, 0, 0, 0.8);
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+  font-family: 'Diploma', cursive;
+}
+
+button:hover {
+  background-color: rgba(255, 0, 0, 1);
+}
